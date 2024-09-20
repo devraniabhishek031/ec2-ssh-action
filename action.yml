@@ -1,0 +1,28 @@
+name: 'EC2 Login using Host and Password'
+description: 'Custom action to log into EC2 using SSH and password'
+
+inputs:
+  EC2_HOST:
+    description: 'The EC2 instance host (IP or DNS name)'
+    required: true
+  EC2_USERNAME:
+    description: 'The username for SSH login'
+    required: true
+  EC2_PASSWORD:
+    description: 'The password for SSH login'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install sshpass
+      shell: bash
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y sshpass
+
+    - name: SSH into EC2
+      shell: bash
+      run: |
+        sshpass -p "${{ inputs.EC2_PASSWORD }}" ssh -o StrictHostKeyChecking=no "${{ inputs.EC2_USERNAME }}@${{ inputs.EC2_HOST }}"
+
